@@ -16,7 +16,7 @@ namespace HealthInsurance.DataAccess.Repository
             this.context = context;
         }
 
-        public void AddCity(Company company)
+        public void AddCompany(Company company)
         {
             context.Companies.AddAsync(company);
         }

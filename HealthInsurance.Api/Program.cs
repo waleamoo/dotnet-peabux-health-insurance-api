@@ -1,5 +1,6 @@
 using HealthInsurance.DataAccess.Models;
 using HealthInsurance.DataAccess.Repository;
+using HealthInsurance.Service.Helpers;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +12,9 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<HealthInsuranceContext>(o => o.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Add AutoMapperProfile 
+builder.Services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
 
 // inject all the services 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
