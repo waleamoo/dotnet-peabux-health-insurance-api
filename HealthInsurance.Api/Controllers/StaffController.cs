@@ -42,5 +42,15 @@ namespace HealthInsurance.Api.Controllers
             await unitOfWork.SaveAsync();
             return new MessageDto { Message = Constants.StaffAdded, Ok = true, Record = null };
         }
+
+        // TODO: Login staff 
+
+        // TODO: Logout staff 
+
+        // TODO: Approve claim 
+
+        // TODO: Cancel claim 
+
+
     }
 }

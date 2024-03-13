@@ -8,7 +8,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Moq" Version="4.20.70" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+    <PackageReference Include="xunit" Version="2.7.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="RepositoryTests\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\HealthInsurance.Api\HealthInsurance.Api.csproj" />
+    <ProjectReference Include="..\HealthInsurance.DataAccess\HealthInsurance.DataAccess.csproj" />
   </ItemGroup>
 
 </Project>
