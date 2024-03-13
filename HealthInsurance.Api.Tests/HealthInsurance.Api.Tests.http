@@ -1,0 +1,6 @@
+@HealthInsurance.Api.Tests_HostAddress = http://localhost:5144
+
+GET {{HealthInsurance.Api.Tests_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

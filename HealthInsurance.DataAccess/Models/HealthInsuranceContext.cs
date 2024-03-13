@@ -1,0 +1,177 @@
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
+
+namespace HealthInsurance.DataAccess.Models;
+
+public partial class HealthInsuranceContext : DbContext
+{
+    public HealthInsuranceContext()
+    {
+    }
+
+    public HealthInsuranceContext(DbContextOptions<HealthInsuranceContext> options)
+        : base(options)
+    {
+    }
+
+    public virtual DbSet<Claim> Claims { get; set; }
+
+    public virtual DbSet<ClaimStatus> ClaimStatuses { get; set; }
+
+    public virtual DbSet<Company> Companies { get; set; }
+
+    public virtual DbSet<Policy> Policies { get; set; }
+
+    public virtual DbSet<PolicyHolder> PolicyHolders { get; set; }
+
+    public virtual DbSet<Staff> Staff { get; set; }
+
+    public virtual DbSet<StaffRole> StaffRoles { get; set; }
+
+    public virtual DbSet<StaffRoleType> StaffRoleTypes { get; set; }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseSqlServer("Server=.\\SQLExpress;Database=HealthInsurance;Trusted_Connection=True;TrustServerCertificate=True");
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Claim>(entity =>
+        {
+            entity.HasKey(e => e.ClaimId).HasName("PK__Claim__EF2E139B432A10E8");
+
+            entity.ToTable("Claim");
+
+            entity.Property(e => e.AmountOfExpenseToBeClaimed).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+            entity.Property(e => e.Expense).HasColumnType("ntext");
+            entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
+            entity.Property(e => e.PolicyHolderId).HasMaxLength(100);
+            entity.Property(e => e.TotalAmountOfExpense).HasColumnType("decimal(18, 2)");
+
+            entity.HasOne(d => d.ClaimStatus).WithMany(p => p.Claims)
+                .HasForeignKey(d => d.ClaimStatusId)
+                .HasConstraintName("FK__Claim__ClaimStat__44FF419A");
+
+            entity.HasOne(d => d.Company).WithMany(p => p.Claims)
+                .HasForeignKey(d => d.CompanyId)
+                .HasConstraintName("FK__Claim__CompanyId__4316F928");
+
+            entity.HasOne(d => d.PolicyHolder).WithMany(p => p.Claims)
+                .HasForeignKey(d => d.PolicyHolderId)
+                .HasConstraintName("FK__Claim__PolicyHol__440B1D61");
+        });
+
+        modelBuilder.Entity<ClaimStatus>(entity =>
+        {
+            entity.HasKey(e => e.ClaimStatusId).HasName("PK__ClaimSta__CEFFA2A361C5BC94");
+
+            entity.ToTable("ClaimStatus");
+
+            entity.Property(e => e.ClaimStatus1)
+                .HasMaxLength(50)
+                .HasColumnName("ClaimStatus");
+            entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+            entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
+        });
+
+        modelBuilder.Entity<Company>(entity =>
+        {
+            entity.HasKey(e => e.CompanyId).HasName("PK__Company__2D971CACE0CA1D80");
+
+            entity.ToTable("Company");
+
+            entity.Property(e => e.CompanyAddress).HasMaxLength(100);
+            entity.Property(e => e.CompanyName).HasMaxLength(50);
+            entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+            entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
+        });
+
+        modelBuilder.Entity<Policy>(entity =>
+        {
+            entity.HasKey(e => e.PolicyId).HasName("PK__Policy__2E1339A4860A0A32");
+
+            entity.ToTable("Policy");
+
+            entity.Property(e => e.PolicyId).HasMaxLength(100);
+            entity.Property(e => e.Benefits).HasColumnType("ntext");
+            entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+            entity.Property(e => e.Discount).HasDefaultValue(0);
+            entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
+            entity.Property(e => e.PolicyType).HasMaxLength(50);
+            entity.Property(e => e.Price).HasColumnType("decimal(18, 2)");
+
+            entity.HasOne(d => d.Company).WithMany(p => p.Policies)
+                .HasForeignKey(d => d.CompanyId)
+                .HasConstraintName("FK__Policy__CompanyI__398D8EEE");
+        });
+
+        modelBuilder.Entity<PolicyHolder>(entity =>
+        {
+            entity.HasKey(e => e.PolicyHolderId).HasName("PK__PolicyHo__0549D02B2D4E9A1F");
+
+            entity.ToTable("PolicyHolder");
+
+            entity.Property(e => e.PolicyHolderId).HasMaxLength(100);
+            entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+            entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
+            entity.Property(e => e.PolicyHolderAddress).HasMaxLength(100);
+            entity.Property(e => e.PolicyHolderName).HasMaxLength(50);
+            entity.Property(e => e.PolicyHolderSurname).HasMaxLength(50);
+            entity.Property(e => e.PolicyId).HasMaxLength(100);
+
+            entity.HasOne(d => d.Company).WithMany(p => p.PolicyHolders)
+                .HasForeignKey(d => d.CompanyId)
+                .HasConstraintName("FK__PolicyHol__Compa__3D5E1FD2");
+
+            entity.HasOne(d => d.Policy).WithMany(p => p.PolicyHolders)
+                .HasForeignKey(d => d.PolicyId)
+                .HasConstraintName("FK__PolicyHol__Polic__3E52440B");
+        });
+
+        modelBuilder.Entity<Staff>(entity =>
+        {
+            entity.HasKey(e => e.StaffId).HasName("PK__Staff__96D4AB178480D066");
+
+            entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+            entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
+            entity.Property(e => e.StaffAddress).HasMaxLength(100);
+            entity.Property(e => e.StaffName).HasMaxLength(50);
+            entity.Property(e => e.StaffSurname).HasMaxLength(50);
+
+            entity.HasOne(d => d.Company).WithMany(p => p.Staff)
+                .HasForeignKey(d => d.CompanyId)
+                .HasConstraintName("FK__Staff__CompanyId__36B12243");
+        });
+
+        modelBuilder.Entity<StaffRole>(entity =>
+        {
+            entity.HasKey(e => e.StaffRoleId).HasName("PK__StaffRol__10792C9194E00357");
+
+            entity.ToTable("StaffRole");
+
+            entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+            entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
+
+            entity.HasOne(d => d.StaffRoleType).WithMany(p => p.StaffRoles)
+                .HasForeignKey(d => d.StaffRoleTypeId)
+                .HasConstraintName("FK__StaffRole__Staff__49C3F6B7");
+        });
+
+        modelBuilder.Entity<StaffRoleType>(entity =>
+        {
+            entity.HasKey(e => e.StaffRoleTypeId).HasName("PK__StaffRol__2A9136E366786CCD");
+
+            entity.ToTable("StaffRoleType");
+
+            entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+            entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
+            entity.Property(e => e.StaffRoleTitle).HasMaxLength(50);
+        });
+
+        OnModelCreatingPartial(modelBuilder);
+    }
+
+    partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+}
