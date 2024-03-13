@@ -1,4 +1,5 @@
 ﻿using HealthInsurance.DataAccess.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,9 +17,17 @@ namespace HealthInsurance.DataAccess.Repository
             this.context = context;
         }
 
-        public void AddCompany(Company company)
+        public async Task AddCompany(Company company)
         {
-            context.Companies.AddAsync(company);
+            company.CompanyGuid = Guid.NewGuid();
+            company.CreatedDate = DateTime.UtcNow;
+            company.ModifiedDate = DateTime.UtcNow;
+            await context.Companies.AddAsync(company);
+        }
+
+        public async Task<Company?> GetCompany(int companyId)
+        {
+            return await context.Companies.FirstOrDefaultAsync(x => x.CompanyId == companyId);
         }
     }
 }

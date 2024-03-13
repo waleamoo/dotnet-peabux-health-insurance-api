@@ -4,6 +4,7 @@ namespace HealthInsurance.DataAccess.Repository
 {
     public interface ICompanyRepository
     {
-        void AddCompany(Company company);
+        Task AddCompany(Company company);
+        Task<Company?> GetCompany(int companyId);
     }
 }

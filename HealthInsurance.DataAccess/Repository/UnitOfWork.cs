@@ -1,11 +1,5 @@
 ﻿using AutoMapper;
 using HealthInsurance.DataAccess.Models;
-using Microsoft.EntityFrameworkCore.Metadata;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HealthInsurance.DataAccess.Repository
 {
@@ -21,6 +15,7 @@ namespace HealthInsurance.DataAccess.Repository
         }
 
         public ICompanyRepository CompanyRepository => new CompanyRepository(context);
+        public IStaffRepository StaffRepository => new StaffRepository(context);
 
         public async Task<bool> SaveAsync()
         {

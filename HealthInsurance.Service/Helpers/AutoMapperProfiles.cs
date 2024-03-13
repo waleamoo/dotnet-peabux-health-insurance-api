@@ -9,6 +9,7 @@ namespace HealthInsurance.Service.Helpers
         public AutoMapperProfiles()
         {
             CreateMap<Company, CompanyAddDto>().ReverseMap();
+            CreateMap<Staff, StaffAddDto>().ReverseMap();
         }
     }
 }

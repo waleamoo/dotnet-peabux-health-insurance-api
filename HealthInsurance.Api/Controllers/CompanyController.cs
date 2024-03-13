@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using HealthInsurance.DataAccess.Constants;
 using HealthInsurance.DataAccess.Dtos;
 using HealthInsurance.DataAccess.Models;
 using HealthInsurance.DataAccess.Repository;
@@ -24,11 +25,9 @@ namespace HealthInsurance.Api.Controllers
         public async Task<MessageDto> AddCompany(CompanyAddDto companyDto)
         {
             Company company = mapper.Map<Company>(companyDto);
-            company.CreatedDate = DateTime.UtcNow;
-            company.ModifiedDate = DateTime.UtcNow;
-            unitOfWork.CompanyRepository.AddCompany(company);
+            await unitOfWork.CompanyRepository.AddCompany(company);
             await unitOfWork.SaveAsync();
-            return new MessageDto { Message = "Company Added", Ok = true, Record = null };
+            return new MessageDto { Message = Constants.CompanyAdded, Ok = true, Record = null };
         }
     }
 }
