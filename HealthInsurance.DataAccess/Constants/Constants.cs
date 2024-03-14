@@ -7,5 +7,7 @@
 
         public const string CompanyNotFound = "Company not found";
 
+        public const string StaffAlreadyExist = "Staff already exist";
+
     }
 }

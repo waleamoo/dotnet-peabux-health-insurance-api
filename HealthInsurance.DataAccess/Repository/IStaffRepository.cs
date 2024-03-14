@@ -1,10 +1,16 @@
-﻿using HealthInsurance.DataAccess.Models;
+﻿using HealthInsurance.DataAccess.Dtos;
+using HealthInsurance.DataAccess.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace HealthInsurance.DataAccess.Repository
 {
     public interface IStaffRepository
     {
-        Task AddStaff(Staff staff);
-        Task AddStaffRole(int staffRoleTypeId, Guid staffGuid);
+        Task<StaffGetDto?> GetStaff(Guid staffGuid, int? companyId);
+        Task<List<StaffRoleType>> GetStaffRoleTypes();
     }
 }

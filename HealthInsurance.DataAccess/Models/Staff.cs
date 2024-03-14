@@ -21,5 +21,11 @@ public partial class Staff
 
     public DateTime ModifiedDate { get; set; }
 
+    public byte[]? Password { get; set; }
+
+    public byte[]? PasswordKey { get; set; }
+
+    public string? StaffEmail { get; set; }
+
     public virtual Company? Company { get; set; }
 }

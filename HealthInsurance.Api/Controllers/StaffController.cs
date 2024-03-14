@@ -3,9 +3,8 @@ using HealthInsurance.DataAccess.Constants;
 using HealthInsurance.DataAccess.Dtos;
 using HealthInsurance.DataAccess.Models;
 using HealthInsurance.DataAccess.Repository;
-using HealthInsurance.Service.Helpers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Net;
 
 namespace HealthInsurance.Api.Controllers
 {
@@ -22,28 +21,49 @@ namespace HealthInsurance.Api.Controllers
             this.mapper = mapper;
         }
 
-        [HttpPost("add")]
-        public async Task<MessageDto> AddStaff(StaffAddDto staffDto)
+        [Authorize]
+        [HttpGet("role-types")]
+        public async Task<ActionResult<List<StaffRoleType>>> GetStaffRoleTypes()
         {
+            return Ok(await unitOfWork.StaffRepository.GetStaffRoleTypes());
+        }
+
+        [HttpGet("{staffGuid:guid}")]
+        public async Task<ActionResult<StaffGetDto>> GetStaff(Guid staffGuid, int? companyId)
+        {
+            // confirm if company exist 
+            return Ok(await unitOfWork.StaffRepository.GetStaff(staffGuid, companyId));
+        }
+
+        [HttpPost("add")]
+        public async Task<ActionResult> AddStaff(StaffAddDto staffDto)
+        {
+            if (await unitOfWork.UserRepository.StaffAlreadyExists(staffDto.StaffEmail))
+                return BadRequest(Constants.StaffAlreadyExist);
+
             // confirm if company exist 
             var company = await unitOfWork.CompanyRepository.GetCompany(staffDto.CompanyId);
             if (company is null)
-                throw new HealthInsuranceException(Constants.CompanyNotFound, HttpStatusCode.NotFound);
-
-            Staff staff = mapper.Map<Staff>(staffDto);
-
-            staff.StaffGuid = Guid.NewGuid();
-            staff.CreatedDate = DateTime.UtcNow;
-            staff.ModifiedDate = DateTime.UtcNow;
+                return BadRequest(Constants.CompanyNotFound);
             // add the staff and the role of the staff
-            await unitOfWork.StaffRepository.AddStaff(staff);
-            await unitOfWork.StaffRepository.AddStaffRole(staffDto.StaffRole, staff.StaffGuid);
-
+            await unitOfWork.UserRepository.RegisterStaff(staffDto);
             await unitOfWork.SaveAsync();
-            return new MessageDto { Message = Constants.StaffAdded, Ok = true, Record = null };
+            return StatusCode(201, Constants.StaffAdded);
         }
 
         // TODO: Login staff 
+        [HttpPost("login")]
+        public async Task<IActionResult> StaffLogin(StaffLoginDto staffDto)
+        {
+            Staff staff = await unitOfWork.UserRepository.AuthenticateStaff(staffDto.StaffEmail, staffDto.StaffPassword);
+            if (staff is null)
+                return Unauthorized();
+            StaffLoginResponseDto staffLoginRes = new();
+            staffLoginRes.StaffEmail = staff.StaffEmail ?? "";
+            staffLoginRes.StaffToken = unitOfWork.UserRepository.CreatJWT(staff);
+            return Ok(staffLoginRes);
+        }
+
 
         // TODO: Logout staff 
 

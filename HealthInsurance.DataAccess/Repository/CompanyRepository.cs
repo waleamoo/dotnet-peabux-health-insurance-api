@@ -29,5 +29,6 @@ namespace HealthInsurance.DataAccess.Repository
         {
             return await context.Companies.FirstOrDefaultAsync(x => x.CompanyId == companyId);
         }
+
     }
 }

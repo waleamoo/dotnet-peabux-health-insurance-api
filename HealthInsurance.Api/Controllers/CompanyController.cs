@@ -21,6 +21,15 @@ namespace HealthInsurance.Api.Controllers
             this.mapper = mapper;
         }
 
+        [HttpGet("{id}")]
+        public async Task<ActionResult> GetCompany(int id)
+        {
+            Company? company = await unitOfWork.CompanyRepository.GetCompany(id);
+            if (company == null)
+                return BadRequest(Constants.CompanyNotFound);
+            return Ok(company);
+        }
+
         [HttpPost("add")]
         public async Task<MessageDto> AddCompany(CompanyAddDto companyDto)
         {

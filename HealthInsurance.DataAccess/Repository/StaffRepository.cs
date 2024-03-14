@@ -1,37 +1,33 @@
-﻿using HealthInsurance.DataAccess.Dtos;
+﻿using AutoMapper;
+using HealthInsurance.DataAccess.Dtos;
 using HealthInsurance.DataAccess.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace HealthInsurance.DataAccess.Repository
 {
     public class StaffRepository : IStaffRepository
     {
         private readonly HealthInsuranceContext context;
+        private readonly IMapper mapper;
 
-        public StaffRepository(HealthInsuranceContext context)
+        public StaffRepository(HealthInsuranceContext context, IMapper mapper)
         {
             this.context = context;
+            this.mapper = mapper;
         }
 
-        public async Task AddStaff(Staff staff)
+        public async Task<StaffGetDto?> GetStaff(Guid staffGuid, int? companyId)
         {
-            await context.Staff.AddAsync(staff);
-        }
-
-        public async Task AddStaffRole(int staffRoleTypeId, Guid staffGuid)
-        {
-            StaffRole staffRole = new StaffRole
+            if (companyId != null)
             {
-                StaffRoleTypeId = staffRoleTypeId,
-                StaffGuid = staffGuid,
-                CreatedDate = DateTime.UtcNow,
-                ModifiedDate = DateTime.UtcNow
-            };
-            await context.StaffRoles.AddAsync(staffRole);
+                return mapper.Map<StaffGetDto>(await context.Staff.Include(x => x.Company).FirstOrDefaultAsync(x => x.StaffGuid ==  staffGuid));
+            }
+            return mapper.Map<StaffGetDto>(await context.Staff.FirstOrDefaultAsync(x => x.StaffGuid == staffGuid));
+        }
+
+        public async Task<List<StaffRoleType>> GetStaffRoleTypes()
+        {
+            return await context.StaffRoleTypes.ToListAsync();
         }
     }
 }
