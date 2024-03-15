@@ -6,8 +6,6 @@ namespace HealthInsurance.DataAccess.Dtos
     {
         public Guid StaffGuid { get; set; }
 
-        public int? CompanyId { get; set; }
-
         public string StaffName { get; set; } = string.Empty;
 
         public string StaffEmail { get; set; } = string.Empty;
@@ -16,7 +14,9 @@ namespace HealthInsurance.DataAccess.Dtos
 
         public string StaffAddress { get; set; } = string.Empty;
 
-        public Company? Company { get; set; }
+        public int? CompanyId { get; set; }
+
+        public string? CompanyName { get; set; }
 
     }
 }
